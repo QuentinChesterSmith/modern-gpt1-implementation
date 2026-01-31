@@ -33,6 +33,29 @@ class GPTBlock(nn.Module):
         ff_output = self.ffn(normalized_x2)
         ff_output = self.drop(ff_output)
 
+        # Returns shape (batch_size, seq_length, embed_dim)
         return ff_output + normalized_x2
 
-         
+
+class GPT(nn.Module):
+    def __init__(self, num_layers, embed_dim, num_heads, vocab_size):
+        super().__init__()
+
+        # GPT Blocks
+        layers = [GPTBlock(embed_dim=embed_dim, num_heads=num_heads)]*num_layers
+        self.layers = nn.Sequential(*layers)
+
+        # Linear -> Softmax for output probabilites
+        self.output_proccesing = nn.Sequential(
+            nn.Linear(embed_dim, vocab_size),
+            nn.Softmax(dim=1)
+        )
+
+    def forward(self, x):
+        decoder_output = self.layers(x)
+        # Feed the last word into Linear layer
+        last_word = decoder_output[:, -1, :]
+        output_probs = self.output_proccesing(last_word)
+        # Ouput Shape (batch_size, vocab_size)
+        return output_probs
+
