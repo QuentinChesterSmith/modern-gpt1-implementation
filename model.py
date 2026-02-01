@@ -53,9 +53,6 @@ class GPT(nn.Module):
 
     def forward(self, x):
         decoder_output = self.layers(x)
-        # Feed the last word into Linear layer
-        last_word = decoder_output[:, -1, :]
-        output_probs = self.output_proccesing(last_word)
-        # Ouput Shape (batch_size, vocab_size)
+        output_probs = self.output_proccesing(decoder_output)
+        # Ouput Shape (batch_size, seq_length, vocab_size)
         return output_probs
-
