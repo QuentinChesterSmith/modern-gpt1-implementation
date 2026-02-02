@@ -41,6 +41,9 @@ class GPT(nn.Module):
     def __init__(self, num_layers, embed_dim, num_heads, vocab_size):
         super().__init__()
 
+        # Embedding Layer
+        self.token_embedding = nn.Embedding(vocab_size, embed_dim)
+
         # GPT Blocks
         layers = [GPTBlock(embed_dim=embed_dim, num_heads=num_heads)]*num_layers
         self.layers = nn.Sequential(*layers)
@@ -52,7 +55,8 @@ class GPT(nn.Module):
         )
 
     def forward(self, x):
-        decoder_output = self.layers(x)
+        embedded_x = self.token_embedding(x)
+        decoder_output = self.layers(embedded_x)
         output_probs = self.output_proccesing(decoder_output)
         # Ouput Shape (batch_size, seq_length, vocab_size)
         return output_probs

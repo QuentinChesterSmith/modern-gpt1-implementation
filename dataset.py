@@ -1,6 +1,6 @@
 from torch.utils.data import IterableDataset
 from datasets import load_dataset
-import tiktoken
+import tiktoken, torch
 
 
 class GutenbergDataset(IterableDataset):
@@ -32,4 +32,4 @@ class GutenbergDataset(IterableDataset):
             for i in range(len(tokenized_text)-(self.seq_length+1)):
                 X = tokenized_text[i:i+self.seq_length]
                 y = tokenized_text[i+1:i+self.seq_length+1]
-                yield (X, y)
+                yield (torch.tensor(X, dtype=torch.long), torch.tensor(y, dtype=torch.long))
