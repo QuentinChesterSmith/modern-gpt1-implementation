@@ -39,11 +39,17 @@ def train(config):
 
     # Logging Freq
     train_loss_freq = config["logging_freq"]["train_loss"]
+    checkpoint_freq = config["logging_freq"]["checkpoint"]
 
     train_set = GutenbergDataset(seq_length)
     train_dl = DataLoader(train_set, batch_size)
 
-    model = GPT(num_layers, embed_dim, num_heads, vocab_size)
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+
+    model = GPT(num_layers, embed_dim, num_heads, vocab_size).to(device)
 
     optimizer = optimizer_class(model.parameters(), lr)
     loss_func = loss_func_class()
@@ -54,6 +60,8 @@ def train(config):
     print("Begining Training")
     for epoch in range(epochs):
         for (X, y) in train_dl:
+            X, y = X.to(device), y.to(device)
+
             optimizer.zero_grad()
             logits = model(X)
             
@@ -71,3 +79,6 @@ def train(config):
             if steps % train_loss_freq == 0:
                 print(f"Step {steps} Training Loss: {running_loss/train_loss_freq}")
                 running_loss = 0
+            if steps % checkpoint_freq == 0:
+                torch.save(model.state_dict(), f"step_{steps}_checkpoint.pt")
+                print(f"step_{steps}_checkpoint.pt saved")
