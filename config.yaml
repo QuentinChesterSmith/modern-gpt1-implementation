@@ -7,12 +7,12 @@ model:
 optimization:
   optimizer: AdamW
   lr: 0.00003
-  linear_scheduler_steps: 200 
+  linear_scheduler_steps: 2000
 
 hyperparameters:
   epochs: 50
   seq_len: 128
-  batch_size: 4
+  batch_size: 12
 
 loss:
   loss_func: CrossEntropyLoss

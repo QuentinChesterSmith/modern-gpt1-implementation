@@ -75,6 +75,7 @@ def train(config):
 
             loss = loss_func(logits, y)
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
             optimizer.step()
             scheduler.step()
             running_loss += loss.item()
