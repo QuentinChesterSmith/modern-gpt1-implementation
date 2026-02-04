@@ -11,6 +11,7 @@ from dataset import GutenbergDataset
 
 OPTIMIZERS = {
     "Adam": optim.Adam,
+    "AdamW": optim.AdamW,
     "SGD": optim.SGD,
     "Adafactor": optim.Adafactor,
 }
@@ -36,6 +37,7 @@ def train(config):
     # Optimization & Loss
     optimizer_class = OPTIMIZERS[config["optimization"]["optimizer"]]
     lr = config["optimization"]["lr"]
+    scheduler_steps = config["optimization"]["linear_scheduler_steps"]
     loss_func_class = LOSS_FUNCTIONS[config["loss"]["loss_func"]]
 
     # Logging Freq
@@ -53,6 +55,7 @@ def train(config):
     model = GPT(num_layers, embed_dim, num_heads, vocab_size).to(device)
 
     optimizer = optimizer_class(model.parameters(), lr)
+    scheduler = optim.lr_scheduler.LinearLR(optimizer, total_iters=scheduler_steps)
     loss_func = loss_func_class()
 
     model.train()
@@ -73,6 +76,7 @@ def train(config):
             loss = loss_func(logits, y)
             loss.backward()
             optimizer.step()
+            scheduler.step()
             running_loss += loss.item()
             steps+=1
 

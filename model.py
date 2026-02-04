@@ -53,7 +53,6 @@ class GPT(nn.Module):
         # Linear -> Softmax for output probabilites
         self.output_proccesing = nn.Sequential(
             nn.Linear(embed_dim, vocab_size),
-            nn.Softmax(dim=2)
         )
 
     def forward(self, x):
