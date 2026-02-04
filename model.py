@@ -46,12 +46,14 @@ class GPT(nn.Module):
         self.token_embedding = nn.Embedding(vocab_size, embed_dim)
 
         # GPT Blocks
-        self.layers = [GPTBlock(embed_dim=embed_dim, num_heads=num_heads)]*num_layers
+        self.layers = nn.ModuleList(
+            [GPTBlock(embed_dim, num_heads) for _ in range(num_layers)]
+        )
 
         # Linear -> Softmax for output probabilites
         self.output_proccesing = nn.Sequential(
             nn.Linear(embed_dim, vocab_size),
-            nn.Softmax(dim=1)
+            nn.Softmax(dim=2)
         )
 
     def forward(self, x):

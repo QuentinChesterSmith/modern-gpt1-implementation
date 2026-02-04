@@ -1,11 +1,11 @@
 model:
   num_layers: 8
   embed_dim: 192
-  num_heads: 4
+  num_heads: 12
   vocab_size: 50257
 
 optimization:
-  optimizer: Adam
+  optimizer: Adafactor
   lr: 0.0001
 
 hyperparameters:
