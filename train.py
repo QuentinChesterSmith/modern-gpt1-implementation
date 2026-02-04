@@ -11,7 +11,8 @@ from dataset import GutenbergDataset
 
 OPTIMIZERS = {
     "Adam": optim.Adam,
-    "SGD": optim.SGD
+    "SGD": optim.SGD,
+    "Adafactor": optim.Adafactor,
 }
 LOSS_FUNCTIONS = {
     "CrossEntropyLoss": nn.CrossEntropyLoss,
