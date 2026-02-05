@@ -65,3 +65,14 @@ class GPT(nn.Module):
         output_probs = self.output_proccesing(previous_output)
         # Ouput Shape (batch_size, seq_length, vocab_size)
         return output_probs
+
+def weight_inits(module, mean=0, std=0.02):
+    if isinstance(module, nn.Linear):
+        nn.init.normal_(module.weight, mean, std)
+        if module.bias is not None:
+            nn.init.zeros_(module.bias)
+    elif isinstance(module, nn.LayerNorm):
+        nn.init.ones_(module.weight)
+        nn.init.zeros_(module.bias)
+    elif isinstance(module, nn.Embedding):
+        nn.init.normal_(module.weight, mean, std)

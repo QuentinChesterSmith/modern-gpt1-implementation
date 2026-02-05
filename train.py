@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from model import GPT
+from model import GPT, weight_inits
 from dataset import GutenbergDataset
 
 
@@ -53,9 +53,10 @@ def train(config):
         device = torch.device("cpu")
 
     model = GPT(num_layers, embed_dim, num_heads, vocab_size).to(device)
+    model = model.apply(weight_inits)
 
     optimizer = optimizer_class(model.parameters(), lr)
-    scheduler = optim.lr_scheduler.LinearLR(optimizer, total_iters=scheduler_steps)
+    scheduler = optim.lr_scheduler.LinearLR(optimizer, start_factor=0,total_iters=scheduler_steps)
     loss_func = loss_func_class()
 
     model.train()
@@ -75,7 +76,7 @@ def train(config):
 
             loss = loss_func(logits, y)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
+            torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=1.0)
             optimizer.step()
             scheduler.step()
             running_loss += loss.item()
