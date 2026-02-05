@@ -56,7 +56,7 @@ def train(config):
     model = model.apply(weight_inits)
 
     optimizer = optimizer_class(model.parameters(), lr)
-    scheduler = optim.lr_scheduler.LinearLR(optimizer, start_factor=0,total_iters=scheduler_steps)
+    scheduler = optim.lr_scheduler.LinearLR(optimizer, start_factor=1e-6,total_iters=scheduler_steps)
     loss_func = loss_func_class()
 
     model.train()
