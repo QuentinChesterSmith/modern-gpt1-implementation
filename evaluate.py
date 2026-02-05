@@ -4,8 +4,8 @@ from torch.nn.functional import pad, softmax
 from model import GPT
 
 def generate_token(model, tokens):
-    logits = model(torch.tensor(tokens))
-    output_probs = softmax(logits, dim=1)
+    logits = model(torch.tensor(tokens))[-1, :]
+    output_probs = softmax(logits)
     return torch.multinomial(output_probs, num_samples=1)
 
 
@@ -13,8 +13,8 @@ def generate_text(model, n_tokens, text):
     model.eval()
     encoder = tiktoken.get_encoding("gpt2")
     tokens = encoder.encode(text)
-    for i in range(n_tokens):
-        tokens.append(list(generate_token(model, tokens)))
+    for _ in range(n_tokens):
+        tokens.append(int(generate_token(model, tokens)))
     
     return encoder.decode(tokens)
 
@@ -31,9 +31,9 @@ if __name__ == "__main__":
 
     while True:
         model_checkpoint = input("Model Checkpoint: ")
-        length = int(input("How many tokens to generate?"))
+        length = int(input("How many tokens to generate? "))
         text = input("Text: ")
 
         model = GPT(num_layers, embed_dim, num_heads, vocab_size)
         model.load_state_dict(torch.load(model_checkpoint))
-        generate_text(model, n_tokens=length, text=text)
+        print(generate_text(model, n_tokens=length, text=text))
