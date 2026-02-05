@@ -21,7 +21,12 @@ class GPTBlock(nn.Module):
     
     def forward(self, x):
         
-        seq_length = x.shape[1]
+        if len(x.shape) == 3:
+            # Batched Input for training
+            seq_length = x.shape[1]
+        else:
+            # Unbatched input for inference
+            seq_length = x.shape[0]
         mask = torch.triu(torch.ones(seq_length, seq_length, dtype=torch.bool, device=x.device), diagonal=1)
 
         # Attention Section
